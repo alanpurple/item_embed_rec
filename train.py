@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import json
 
-from input_new import make_input_fn
+from input import make_input_fn
 from base_model import base_model
 
 MAX_HIST_LEN = 500
@@ -27,4 +27,4 @@ def train(filename,batch_size,num_epochs,model_dir):
     estimator.train(train_input_fn)
 
 if __name__=='__main__':
-    train('train.tfrecord',32,3,'./model_log')  
+    train('train.tfrecord',32,1,'./model_log')  
