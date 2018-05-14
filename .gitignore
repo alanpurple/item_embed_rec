@@ -1,0 +1,6 @@
+
+*.npy
+*.json
+model_log
+*.tfrecord
+*.pyc
