@@ -5,3 +5,4 @@ model_log
 *.tfrecord
 *.pyc
 *.pkl
+.DS_Store

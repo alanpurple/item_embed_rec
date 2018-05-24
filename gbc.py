@@ -29,6 +29,7 @@ for i,prod_len in enumerate(product_train):
         zero_padding_len=50-prod_len
     temp=[user_train[i],retrieved_train[i]]
     temp+=[0]*zero_padding_len
+    # add 50(at most) recent history 
     temp_history=history[user_train[i]][-prod_len:]
     temp+=temp_history
     assert len(temp)==52
