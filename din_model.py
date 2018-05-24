@@ -1,7 +1,6 @@
 import tensorflow as tf
 
 def din_model(features,labels,mode,params):
-    user_id=features['user_id']
     hist_len=features['hist_len']
     retrieved=features['retrieved']
     user_history=features['hist']
