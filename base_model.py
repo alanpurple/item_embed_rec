@@ -36,7 +36,7 @@ def base_model(features, labels, mode, params):
     training = mode==tf.estimator.ModeKeys.TRAIN
     hist_mean=tf.layers.batch_normalization(hist_mean,training=training)
     hist_mean=tf.layers.dense(hist_mean,hidden_len)
-    retrieved_plus_hist=tf.concat([hist_mean,retrieved_emb_with_cate],0,name='concat_retrieved_with_history')
+    retrieved_plus_hist=tf.concat([hist_mean,retrieved_emb_with_cate],1,name='concat_retrieved_with_history')
     retrieved_plus_hist=tf.layers.batch_normalization(retrieved_plus_hist,training=training,name='fc')
     fc_retrieved1 = tf.layers.dense(retrieved_plus_hist,80,tf.nn.sigmoid,name='fc1')
     fc_retrieved2 = tf.layers.dense(fc_retrieved1,40,tf.nn.sigmoid,name='fc2')

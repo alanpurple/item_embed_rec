@@ -4,6 +4,7 @@ import json
 
 from input import make_input_fn
 from base_model import base_model
+#from din_model import din_model
 
 MAX_HIST_LEN = 500
 
@@ -16,6 +17,7 @@ def train(filename,batch_size,num_epochs,model_dir):
 
     train_input_fn=make_input_fn('train.tfrecord',MAX_HIST_LEN,batch_size,num_epochs)
 
+    # din_model or base_model
     estimator=tf.estimator.Estimator(base_model,model_dir=model_dir,
     params={
         'item_len':item_len,
