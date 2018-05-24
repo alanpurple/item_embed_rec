@@ -1,7 +1,11 @@
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import roc_curve,roc_auc_score
 from sklearn.utils import shuffle
+from sklearn.externals import joblib
+from matplotlib import pyplot
 import pickle
 import numpy as np
+from os import path
 
 with open('train.pkl','rb') as f:
     product_train=pickle.load(f)
@@ -53,12 +57,31 @@ for i,prod_len in enumerate(product_test):
 
 train_data,labels_train=shuffle(train_data,labels_train,random_state=2000)
 
-gbc=GradientBoostingClassifier()
-
-gbc.fit(train_data,labels_train)
+if path.exists('gbc.pkl'):
+    gbc=joblib.load('gbc.pkl')
+else:
+    gbc=GradientBoostingClassifier()
+    gbc.fit(train_data,labels_train)
+    joblib.dump(gbc,'gbc.pkl')
 
 print(gbc.feature_importances_)
 
 score=gbc.score(test_data,labels_test)
 
 print('The test score is : {:.4f}'.format(score))
+
+prob= gbc.predict_proba(test_data)[:,1]
+
+fpr,tpr,threshold=roc_curve(labels_test,prob,pos_label=1)
+
+pyplot.plot(fpr,tpr)
+pyplot.xlabel('False positive rate')
+pyplot.ylabel('True positive rate')
+pyplot.title('ROC curve')
+pyplot.legend(loc='best')
+
+auc_score=roc_auc_score(labels_test,prob)
+
+print('auc score: {:.4f}'.format(auc_score))
+
+pyplot.show()
