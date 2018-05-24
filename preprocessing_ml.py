@@ -68,18 +68,11 @@ retrieved_test=[]
 labels_train=[]
 labels_test=[]
 
-history=np.zeros([len(data_dict['reviewer_id']),50],np.int64)
+history=[]
 
 for reviewerID, hist in reviews_df.groupby('reviewerID'):
   pos_list=hist['asin'].tolist()
-  # for index,elem in enumerate(pos_list):
-  #  history[reviewerID][index]=elem
-  for i in range(50):
-    if len(pos_list)<50:
-      for j in range(len(pos_list)):
-        history[j]=pos_list[j]
-    else:
-      history[i]=pos_list[i]
+  history.append(pos_list)
   list_len=len(pos_list)
   def gen_neg():
     neg = pos_list[0]
@@ -100,7 +93,8 @@ for reviewerID, hist in reviews_df.groupby('reviewerID'):
   labels_train+=[1]*(list_len-2)+[0]*(list_len-2)
   labels_test+=[1,0]
 
-np.save('history.npy',history)
+with open('history.pkl','wb') as f:
+  pickle.dump(history,f,pickle.HIGHEST_PROTOCOL)
 
 with open('train.pkl','wb') as f:
   pickle.dump(product_train,f,pickle.HIGHEST_PROTOCOL)

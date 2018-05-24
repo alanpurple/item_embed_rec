@@ -15,30 +15,39 @@ with open('test.pkl','rb') as f:
     user_test=pickle.load(f)
     labels_test=pickle.load(f)
 
-# each of size 50, filled with 0 if history has length less than 50
-history=np.load('history.npy')
+with open('history.pkl','rb') as f:
+    history=pickle.load(f)
 
 train_data=[]
 test_data=[]
 
 for i,prod_len in enumerate(product_train):
-    assert len(history[user_train[i]])<51
-    zero_padding_len=50-prod_len
+    if prod_len>49:
+        prod_len=50
+        zero_padding_len=0
+    else:
+        zero_padding_len=50-prod_len
     temp=[user_train[i],retrieved_train[i]]
-    temp_history=history[user_train[i]][:prod_len].tolist()
-    temp_history.reverse()
-    temp+=temp_history
     temp+=[0]*zero_padding_len
+    temp_history=history[user_train[i]][-prod_len:]
+    temp+=temp_history
+    assert len(temp)==52
+    
     train_data.append(temp)
 
 for i,prod_len in enumerate(product_test):
-    assert len(history[user_test[i]])<51
-    zero_padding_len=50-prod_len
+    if prod_len>49:
+        prod_len=50
+        zero_padding_len=0
+    else:
+        zero_padding_len=50-prod_len
     temp=[user_test[i],retrieved_test[i]]
-    temp_history=history[user_test[i]][:prod_len].tolist()
-    temp_history.reverse()
-    temp+=temp_history
     temp+=[0]*zero_padding_len
+    temp_history=history[user_test[i]][-prod_len:]
+    temp+=temp_history
+
+    assert len(temp)==52
+    
     test_data.append(temp)
 
 train_data,labels_train=shuffle(train_data,labels_train,random_state=2000)
