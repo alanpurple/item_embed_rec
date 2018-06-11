@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8726af5c-d01b-42ee-bf0c-71e27cdedfc1}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>w2v_lr.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="base_model.py" />
+    <Compile Include="din_model.py" />
+    <Compile Include="gbc.py" />
+    <Compile Include="input.py" />
+    <Compile Include="models\dealw2v.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="models\posdata.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="models\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="preprocessing.py" />
+    <Compile Include="preprocessing_ml.py" />
+    <Compile Include="train.py" />
+    <Compile Include="w2v_lr.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="models\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+</Project>
