@@ -1,4 +1,4 @@
-from mongoengine import Document,StringField,IntField,FloatField,ObjectIdField,ListField,EmbeddedDocumentField,ReferenceField,EmbeddedDocument
+from mongoengine import Document,StringField,IntField,FloatField,ObjectIdField,ListField,DictField,ReferenceField,EmbeddedDocument
 
 class WordsVector(EmbeddedDocument):
     type=IntField()
@@ -7,6 +7,6 @@ class WordsVector(EmbeddedDocument):
 class DealW2v(Document):
     meta={'collection':'dealw2v'}
     _id=ObjectIdField()
-    v=IntField(unique=True)
+    v=IntField()
     words=ListField(StringField())
-    vectorizedWords=EmbeddedDocumentField(WordsVector)
+    vectorizedWords=DictField()
