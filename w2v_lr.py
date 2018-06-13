@@ -9,14 +9,14 @@ from models import PosData
 
 connect('wepickw2v',host='mongodb://localhost')
 
-wepickdata=PosData.objects(TransDate__gte='2018-04-10 00',TransDate__lte='2018-04-11 23',WepickRank__gte=20).aggregate(
+wepickdata=PosData.objects(TransDate__gte='2018-04-08 00',TransDate__lte='2018-04-11 23',WepickRank__gte=20).aggregate(
     *[{'$group':{'_id':'$UserId','docs':{'$push':'$$ROOT'}}}],allowDiskUse=True)
 # in case cursornotfounderrror caused by very long sampling times
 wepickdata=list(wepickdata)
 data=[]
 
-for elem in wepickdata:
-    if len(elem['docs'])>5:
+for i,elem in enumerate(wepickdata):
+    if len(elem['docs'])>40:
         hist=[]
         for doc in elem['docs']:
             result=DealW2v.objects(v=doc['DealId']).first()
@@ -25,7 +25,7 @@ for elem in wepickdata:
                 if len(temp)==100:
                     if temp[0]!=0 and temp[1]!=0 and temp[2]!=0:
                         hist.append(temp)
-        sampled=DealW2v.objects().aggregate(*[{'$sample':{'size':len(hist)*5}}])
+        sampled=DealW2v.objects().aggregate(*[{'$sample':{'size':len(hist)*3}}])
         sampled_v=[]
         for sample in sampled:
             if sample['v'] not in elem['docs']:
@@ -41,6 +41,8 @@ for elem in wepickdata:
             neg_samples.append(sampled_v[max_index])
             del sampled_v[max_index]
         data.append([hist,neg_samples])
+    if len(data)>5000:
+        break
         
 
 train_data=[]
@@ -53,14 +55,14 @@ for pair in data:
     hist_sum=[0]*100
     for i in range(len(hist)-2):
         hist_sum=[sum(x) for x in zip(hist_sum,hist[i])]
-        train_data.append([hist_sum,hist[i+1]])
+        train_data.append(hist_sum+hist[i+1])
         train_label.append(1)
-        train_data.append([hist_sum,neg_samples[i+1]])
+        train_data.append(hist_sum+neg_samples[i+1])
         train_label.append(0)
     hist_sum=[sum(x) for x in zip(hist_sum,hist[-2])]
-    test_data.append([hist_sum,hist[-1]])
+    test_data.append(hist_sum+hist[-1])
     test_label.append(1)
-    test_data.append([hist_sum,neg_samples[-1]])
+    test_data.append(hist_sum+neg_samples[-1])
     test_label.append(0)
 
 assert len(train_data)==len(train_label)
