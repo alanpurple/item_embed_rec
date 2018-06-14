@@ -86,9 +86,14 @@ for pair in data:
 assert len(train_data)==len(train_label)
 assert len(test_data)==len(test_label)
 
-lr=LogisticRegression()
+lr=LogisticRegression(solver='sag')
 lr.fit(train_data,train_label)
 
 score=lr.score(test_data,test_label)
 
 print(score)
+
+print('probability for a few results: \n')
+print(lr.predict_proba(test_data[:30]))
+print('original class of above data: \n')
+print(test_label[:30])
