@@ -29,6 +29,9 @@
     <Compile Include="models\posdata.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="models\wepickdeal.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\__init__.py">
       <SubType>Code</SubType>
     </Compile>
