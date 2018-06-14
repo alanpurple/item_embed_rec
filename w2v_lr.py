@@ -1,4 +1,6 @@
 from sklearn.linear_model import LogisticRegression
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.utils import shuffle
 import pandas as pd
 import numpy as np
 from scipy.spatial.distance import pdist
@@ -67,6 +69,7 @@ train_data=[]
 train_label=[]
 test_data=[]
 test_label=[]
+# history value is just a summation, not an average
 for pair in data:
     hist=pair[0]
     neg_samples=pair[1]
@@ -86,7 +89,8 @@ for pair in data:
 assert len(train_data)==len(train_label)
 assert len(test_data)==len(test_label)
 
-lr=LogisticRegression(solver='sag')
+# need scaling for use of Stochastic Average Gradient descent solver ( much faster )
+lr=LogisticRegression()
 lr.fit(train_data,train_label)
 
 score=lr.score(test_data,test_label)
