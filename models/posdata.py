@@ -1,9 +1,9 @@
-from mongoengine import Document,StringField,IntField,ObjectIdField
+from mongoengine import Document,StringField,IntField,ObjectIdField,ReferenceField
+from models import DealW2v
 
 class PosData(Document):
     meta={'collection':'posdata'}
-    _id=ObjectIdField()
-    DealId=IntField()
+    DealId=ReferenceField(DealW2v)
     UserId=IntField()
     WepickRank=IntField()
     TransDate=StringField()

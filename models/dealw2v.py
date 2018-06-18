@@ -6,7 +6,6 @@ class WordsVector(EmbeddedDocument):
 
 class DealW2v(Document):
     meta={'collection':'dealw2v'}
-    _id=ObjectIdField()
-    v=IntField()
+    primary=IntField(primary_key=True)
     words=ListField(StringField())
     vectorizedWords=DictField()

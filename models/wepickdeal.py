@@ -2,6 +2,7 @@ from mongoengine import Document,StringField,IntField,ObjectIdField,ReferenceFie
 from models import DealW2v
 
 class WepickDeal(Document):
-    _id=StringField()
+    meta={'collection':'wepickdeals'}
+    primary=StringField(primary_key=True)
     cnt=IntField()
-    deal:ReferenceField(DealW2v)
+    deal=ReferenceField(DealW2v)

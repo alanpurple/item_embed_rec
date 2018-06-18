@@ -1,10 +1,11 @@
-from sklearn.linear_model import LogisticRegression
+﻿from sklearn.linear_model import LogisticRegression
 # from sklearn.preprocessing import StandardScaler
 # from sklearn.utils import shuffle
 import pandas as pd
 import numpy as np
 from scipy.spatial.distance import pdist
 from mongoengine import connect
+from mongoengine.errors import DoesNotExist
 
 from models import DealW2v
 from models import PosData
@@ -12,7 +13,7 @@ from models import WepickDeal
 
 connect('wepickw2v',host='mongodb://localhost')
 
-wepickdata=PosData.objects(TransDate__gte='2018-04-08 00',TransDate__lte='2018-04-11 23',WepickRank__gte=20,WepickRank_lte=55).aggregate(
+wepickdata=PosData.objects(TransDate__gte='2018-04-08 00',TransDate__lte='2018-04-11 23',WepickRank__gte=20,WepickRank__lte=55).aggregate(
     *[{'$group':{'_id':'$UserId','docs':{'$push':'$$ROOT'}}}],allowDiskUse=True)
 # in case cursornotfounderrror caused by very long sampling times
 wepickdata=list(wepickdata)
@@ -26,7 +27,7 @@ for i,elem in enumerate(wepickdata):
         hist=[]
         neg_samples=[]
         for doc in elem['docs']:
-            result=DealW2v.objects(v=doc['DealId']).first()
+            result=DealW2v.objects(pk=doc['DealId']).first()
             if result != None:
                 temp=result.vectorizedWords['values']
                 if len(temp)==100:
@@ -35,15 +36,25 @@ for i,elem in enumerate(wepickdata):
                         while True:
                             interrupter+=1
                             interrupter%=11
-                            # 0 insertion is not needed since we queried only transactions with wepickrank more than 19
-                            search_str=doc['TransDate']+' '+str(doc['WepickRank']+interrupter-5)
+                            slot_num=doc['WepickRank']+interrupter-5
+                            if slot_num<10:
+                                slot_str='0'+str(slot_num)
+                            else:
+                                slot_str=str(slot_num)
+                            search_str=doc['TransDate']+' '+slot_str
 
-                            neg_result=neg_sample=WepickDeal.objects(_id=search_str).first()
+                            neg_result=neg_sample=WepickDeal.objects(pk=search_str).first()
+                            try:
+                                musttrue=hasattr(neg_result,'deal')
+                            except DoesNotExist:
+                                continue
                             if neg_result!=None:
-                                if neg_result.deal.v != doc['DealId']:
+                                if neg_result.deal.id != doc['DealId']:
                                     neg_sample=neg_result.deal.vectorizedWords['values']
-                                    neg_samples.append(neg_sample)
-                                    break
+                                    if len(neg_sample)==100:
+                                        if neg_sample[0]!=0 and neg_sample[1]!=0 and neg_sample[2]!=0:
+                                            neg_samples.append(neg_sample)
+                                            break
 
         #sampled=DealW2v.objects().aggregate(*[{'$sample':{'size':len(hist)*3}}])
         #sampled_v=[]
@@ -61,7 +72,7 @@ for i,elem in enumerate(wepickdata):
         #    neg_samples.append(sampled_v[max_index])
         #    del sampled_v[max_index]
         data.append([hist,neg_samples])
-    if len(data)>300:
+    if len(data)>30:
         break
         
 
@@ -100,4 +111,4 @@ print(score)
 print('probability for a few results: \n')
 print(lr.predict_proba(test_data[:30]))
 print('original class of above data: \n')
-print(test_label[:30])
+print(test_label[:10])
