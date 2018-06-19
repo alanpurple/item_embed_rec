@@ -1,7 +1,9 @@
 ﻿from sklearn.linear_model import LogisticRegressionCV
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import roc_auc_score
 from sklearn.utils import shuffle
 from sklearn.externals import joblib
+from matplotlib import pyplot
 from mongoengine import connect
 from mongoengine.errors import DoesNotExist
 
@@ -122,3 +124,19 @@ print('probability for a few results: \n')
 print(lr.predict_proba(test_data[:10]))
 print('original class of above data: \n')
 print(test_label[:10])
+
+predicted_probs=lr.predict_proba(X_test)[:,1]
+
+fpr,tpr,threshold=roc_curve(test_label,predicted_probs,pos_label=1)
+
+pyplot.plot(fpr,tpr)
+pyplot.xlabel('False positive rate')
+pyplot.ylabel('True positive rate')
+pyplot.title('ROC curve')
+pyplot.legend(loc='best')
+
+auc_score=roc_auc_score(test_label,predicted_probs)
+
+print('auc score: {:.4f}'.format(auc_score))
+
+pyplot.show()
