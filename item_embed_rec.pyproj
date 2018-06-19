@@ -41,6 +41,9 @@
     <Compile Include="w2v_lr.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="w2v_lr_predict.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />

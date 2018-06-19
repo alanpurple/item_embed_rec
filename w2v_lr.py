@@ -1,9 +1,7 @@
-﻿from sklearn.linear_model import LogisticRegression
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.utils import shuffle
-import pandas as pd
-import numpy as np
-from scipy.spatial.distance import pdist
+﻿from sklearn.linear_model import LogisticRegressionCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.utils import shuffle
+from sklearn.externals import joblib
 from mongoengine import connect
 from mongoengine.errors import DoesNotExist
 
@@ -13,17 +11,19 @@ from models import WepickDeal
 
 connect('wepickw2v',host='mongodb://localhost')
 
-wepickdata=PosData.objects(TransDate__gte='2018-04-08 00',TransDate__lte='2018-04-11 23',WepickRank__gte=20,WepickRank__lte=55).aggregate(
+wepickdata=PosData.objects(TransDate__gte='2018-04-01 00',TransDate__lte='2018-04-10 23',WepickRank__gte=20,WepickRank__lte=55).aggregate(
     *[{'$group':{'_id':'$UserId','docs':{'$push':'$$ROOT'}}}],allowDiskUse=True)
 # in case cursornotfounderrror caused by very long sampling times
 wepickdata=list(wepickdata)
 data=[]
 
+print('Number of Users: ',len(wepickdata))
+
 # fake randomness variable
 interrupter=0
 
-for i,elem in enumerate(wepickdata):
-    if len(elem['docs'])>40:
+for elem in wepickdata:
+    if len(elem['docs'])>20 and len(elem['docs'])<40:
         hist=[]
         neg_samples=[]
         for doc in elem['docs']:
@@ -72,9 +72,8 @@ for i,elem in enumerate(wepickdata):
         #    neg_samples.append(sampled_v[max_index])
         #    del sampled_v[max_index]
         data.append([hist,neg_samples])
-    if len(data)>30:
-        break
-        
+
+print('Number of Actual Users: ',len(data))        
 
 train_data=[]
 train_label=[]
@@ -100,15 +99,26 @@ for pair in data:
 assert len(train_data)==len(train_label)
 assert len(test_data)==len(test_label)
 
-# need scaling for use of Stochastic Average Gradient descent solver ( much faster )
-lr=LogisticRegression()
-lr.fit(train_data,train_label)
+print('train data length: ',len(train_data))
 
-score=lr.score(test_data,test_label)
+# need scaling for use of Stochastic Average Gradient descent solver ( much faster )
+scaler=StandardScaler()
+scaler.fit(train_data)
+
+joblib.dump(scaler,'scaler.pkl')
+
+X=scaler.transform(train_data)
+X_test=scaler.transform(test_data)
+lr=LogisticRegressionCV(penalty='l2',n_jobs=-1,solver='sag')
+lr.fit(X,train_label)
+
+joblib.dump(lr,'wplr.pkl')
+
+score=lr.score(X_test,test_label)
 
 print(score)
 
 print('probability for a few results: \n')
-print(lr.predict_proba(test_data[:30]))
+print(lr.predict_proba(test_data[:10]))
 print('original class of above data: \n')
 print(test_label[:10])
