@@ -7,3 +7,4 @@ model_log
 *.pkl
 .DS_Store
 /.vs
+*.csv
