@@ -19,7 +19,7 @@ wepickdata=list(wepickdata)
 feature_columns=['user_id']
 for i in range(100):
     feature_columns.append('feature_'+str(i+1))
-data=[feature_columns]
+data=[]
 
 print('Number of Users: ',len(wepickdata))
 
@@ -38,8 +38,8 @@ for elem in wepickdata:
 
 print('resulting number of users: ',len(data)-1)
 
-profile_df=pd.DataFrame(data)
-profile_df.to_csv('profile_'+HISTORY_FROM+'_'+HISTORY_TO+'.csv')
+profile_df=pd.DataFrame(data,columns=feature_columns)
+profile_df.to_csv('profile_'+HISTORY_FROM+'_'+HISTORY_TO+'.csv',index=False)
 
 scaler=joblib.load('scaler.pkl')
 wplr=joblib.load('wplr.pkl')
