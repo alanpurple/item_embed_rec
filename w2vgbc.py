@@ -1,4 +1,4 @@
-﻿from sklearn.linear_model import LogisticRegressionCV
+﻿from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score,roc_curve
 from sklearn.utils import shuffle
@@ -58,21 +58,21 @@ joblib.dump(scaler,'scaler.pkl')
 
 X=scaler.transform(train_data)
 X_test=scaler.transform(test_data)
-lr=LogisticRegressionCV(penalty='l2',n_jobs=-1,solver='sag')
-lr.fit(X,train_label)
+gbc=GradientBoostingClassifier()
+gbc.fit(X,train_label)
 
-joblib.dump(lr,'wplr.pkl')
+joblib.dump(gbc,'wpgbc.pkl')
 
-score=lr.score(X_test,test_label)
+score=gbc.score(X_test,test_label)
 
 print(score)
 
 print('probability for a few results: \n')
-print(lr.predict_proba(test_data[:10]))
+print(gbc.predict_proba(test_data[:10]))
 print('original class of above data: \n')
 print(test_label[:10])
 
-predicted_probs=lr.predict_proba(X_test)[:,1]
+predicted_probs=gbc.predict_proba(X_test)[:,1]
 
 fpr,tpr,threshold=roc_curve(test_label,predicted_probs,pos_label=1)
 

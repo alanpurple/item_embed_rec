@@ -37,11 +37,18 @@
     </Compile>
     <Compile Include="preprocessing.py" />
     <Compile Include="preprocessing_ml.py" />
+    <Compile Include="temporary_test.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="train.py" />
+    <Compile Include="w2vgbc.py" />
     <Compile Include="w2v_lr.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="w2v_lr_predict.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="wp_preprocess.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
