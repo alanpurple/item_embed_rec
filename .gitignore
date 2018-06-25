@@ -8,3 +8,4 @@ model_log
 .DS_Store
 /.vs
 *.csv
+/lr_tf_models

@@ -1,20 +1,28 @@
-﻿from sklearn.linear_model import LogisticRegressionCV
+from sklearn.linear_model import LogisticRegressionCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import roc_auc_score,roc_curve
 from sklearn.utils import shuffle
 from sklearn.externals import joblib
-from matplotlib import pyplot
 import pickle
+import tensorflow as tf
 
 HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
 
 train_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'.pkl'
+train_tfr_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_train.tfrecord'
+test_tfr_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_test.tfrecord'
 
 with open(train_data_path,'rb') as f:
     data=pickle.load(f)
 
 print('Number of Actual Users: ',len(data))
+
+def _int64_feature(value):
+    return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
+
+def _float_list_feature(elems):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=elems))
 
 train_data=[]
 train_label=[]
@@ -45,37 +53,27 @@ print('train data length: ',len(train_data))
 # need scaling for use of Stochastic Average Gradient descent solver ( much faster )
 scaler=StandardScaler()
 scaler.fit(train_data)
+train_data=scaler.transform(train_data)
+test_data=scaler.transform(test_data)
 
 joblib.dump(scaler,'scaler.pkl')
 
-X=scaler.transform(train_data)
-X_test=scaler.transform(test_data)
-lr=LogisticRegressionCV(penalty='l2',n_jobs=-1,solver='sag')
-lr.fit(X,train_label)
+with tf.python_io.TFRecordWriter(train_tfr_path) as writer:
+    for i in range(len(train_data)):
+        example=tf.train.Example(
+            features=tf.train.Features(
+                feature={
+                    'profile':_float_list_feature(train_data[i]),
+                    'label':_int64_feature(train_label[i])
+                    }))
+        writer.write(example.SerializeToString())
 
-joblib.dump(lr,'wplr.pkl')
-
-score=lr.score(X_test,test_label)
-
-print(score)
-
-print('probability for a few results: \n')
-print(lr.predict_proba(test_data[:10]))
-print('original class of above data: \n')
-print(test_label[:10])
-
-predicted_probs=lr.predict_proba(X_test)[:,1]
-
-fpr,tpr,threshold=roc_curve(test_label,predicted_probs,pos_label=1)
-
-pyplot.plot(fpr,tpr)
-pyplot.xlabel('False positive rate')
-pyplot.ylabel('True positive rate')
-pyplot.title('ROC curve')
-pyplot.legend(loc='best')
-
-auc_score=roc_auc_score(test_label,predicted_probs)
-
-print('auc score: {:.4f}'.format(auc_score))
-
-pyplot.show()
+with tf.python_io.TFRecordWriter(test_tfr_path) as writer:
+    for i in range(len(test_data)):
+        example=tf.train.Example(
+            features=tf.train.Features(
+                feature={
+                    'profile':_float_list_feature(test_data[i]),
+                    'label':_int64_feature(test_label[i])
+                    }))
+        writer.write(example.SerializeToString())

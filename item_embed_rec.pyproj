@@ -26,6 +26,9 @@
     <Compile Include="models\dealw2v.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="make_train_data.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\posdata.py">
       <SubType>Code</SubType>
     </Compile>
@@ -46,6 +49,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="w2v_lr_predict.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="w2v_lr_tf.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="wp_preprocess.py">
