@@ -40,6 +40,7 @@
     </Compile>
     <Compile Include="preprocessing.py" />
     <Compile Include="preprocessing_ml.py" />
+    <Compile Include="run_server.py" />
     <Compile Include="temporary_test.py">
       <SubType>Code</SubType>
     </Compile>
@@ -54,12 +55,22 @@
     <Compile Include="w2v_lr_tf.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="wprecservice_pb2.py" />
+    <Compile Include="wprecservice_pb2_grpc.py" />
+    <Compile Include="wp_predict.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="wp_preprocess.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wprecservice.proto">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
 </Project>

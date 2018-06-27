@@ -1,0 +1,31 @@
+syntax="proto3";
+
+option java_multiple_files = true;
+option java_package = "wmind.demo.wprecservice";
+option java_outer_classname = "WpRecService";
+
+package WpRecService;
+
+service WpRecService {
+	rpc GetRecommend (RecommendRequest) returns (RecommendResponse) {}
+}
+
+message RecommendRequest {
+	string methodName = 1;
+	string dayFrom = 2;
+	string dayTo = 3;
+	string predictMoment = 4;
+	uint32 user = 5;
+}
+
+message RecommendResponse {
+	// -1 for no error, 0 for bad request, 1 for process error
+	int32 error = 1;
+	repeated Predicted result = 2;
+}
+
+message Predicted {
+	uint32 id = 1;
+	uint32 slot = 2;
+	float score = 3;
+}
