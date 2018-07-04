@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8726af5c-d01b-42ee-bf0c-71e27cdedfc1}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>w2v_lr.py</StartupFile>
+    <StartupFile>run_server.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>

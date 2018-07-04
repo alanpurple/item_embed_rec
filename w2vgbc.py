@@ -8,7 +8,6 @@ from mongoengine import connect
 from mongoengine.errors import DoesNotExist
 import pickle
 
-from models import DealW2v
 from models import PosData
 from models import WepickDeal
 

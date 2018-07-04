@@ -35,7 +35,7 @@ for elem in wepickdata:
         for doc in elem['docs']:
             result=DealW2v.objects(pk=doc['DealId']).first()
             if result != None:
-                temp=result.vectorizedWords['values']
+                temp=result.vectorizedWords
                 if len(temp)==100:
                     if temp[0]!=0 and temp[1]!=0 and temp[2]!=0:
                         hist.append(temp)
@@ -66,7 +66,7 @@ for elem in wepickdata:
         #sampled_v=[]
         #for sample in sampled:
         #    if sample['v'] not in elem['docs']:
-        #        t= sample['vectorizedWords']['values']
+        #        t= sample['vectorizedWords']
         #        if len(t)==100:
         #            if t[0]!=0 and t[1]!=0 and t[2]!=0:
         #                sampled_v.append(t)

@@ -35,7 +35,7 @@ else:
                 hist_sum=[0]*100
                 result=DealW2v.objects(pk=deal).first()
                 if result != None:
-                    temp=result.vectorizedWords['values']
+                    temp=result.vectorizedWords
                     if len(temp)==100:
                         if temp[0]!=0 and temp[1]!=0 and temp[2]!=0:
                             hist_sum=[sum(x) for x in zip(hist_sum,temp)]
@@ -69,7 +69,7 @@ picks=[]
 for elem in sample_picks:
     deal=DealW2v.objects(pk=elem).first()
     if deal != None:
-        deal_vec=deal.vectorizedWords['values']
+        deal_vec=deal.vectorizedWords
         if len(deal_vec)==100:
             if deal_vec[0]!=0 and deal_vec[1]!=0 and deal_vec[2]!=0:
                 picks.append(elem)

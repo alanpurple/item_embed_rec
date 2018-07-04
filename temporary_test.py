@@ -27,7 +27,7 @@ goal_vec=[]
 for id in goal_list:
     deal=DealW2v.objects(pk=id).first()
     if deal != None:
-        deal_vec=deal.vectorizedWords['values']
+        deal_vec=deal.vectorizedWords
         if len(deal_vec)==100:
             if deal_vec[0]!=0 and deal_vec[1]!=0 and deal_vec[2]!=0:
                 goal_list_final.append(id)
@@ -52,7 +52,7 @@ for user in userdata:
     for elem in user['docs']:
         deal=DealW2v.objects(pk=elem).first()
         if deal != None:
-            deal_vec=deal.vectorizedWords['values']
+            deal_vec=deal.vectorizedWords
             if len(deal_vec)==100:
                 if deal_vec[0]!=0 and deal_vec[1]!=0 and deal_vec[2]!=0:
                     temp[i]=elem
