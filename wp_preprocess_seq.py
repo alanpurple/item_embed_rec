@@ -1,6 +1,7 @@
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import shuffle
 from sklearn.externals import joblib
+import numpy as np
 from mongoengine import connect
 from mongoengine.errors import DoesNotExist
 import pickle
@@ -28,15 +29,21 @@ print('Number of Users: ',len(wepickdata))
 # fake randomness variable
 interrupter=0
 
+deal_dict=[]
+
 for elem in wepickdata:
     if len(elem['docs'])>20 and len(elem['docs'])<40:
         hist=[]
         neg_samples=[]
         for doc in elem['docs']:
-            result=DealW2v.objects(pk=doc['DealId']).first()
+            pos_id=doc['DealId']
+            result=DealW2v.objects(pk=pos_id).first()
             if result != None:
-                temp=result.vectorizedWords
-                hist.append(temp)
+                if pos_id in deal_dict:
+                    hist.append(deal_dict.index(pos_id))
+                else:
+                    hist.append(len(deal_dict))
+                    deal_dict.append(pos_id)
                 while True:
                     interrupter+=1
                     interrupter%=11
@@ -53,14 +60,19 @@ for elem in wepickdata:
                     except DoesNotExist:
                         continue
                     if neg_result!=None:
-                        if neg_result.deal.id != doc['DealId']:
-                            neg_sample=neg_result.deal.vectorizedWords
-                            neg_samples.append(neg_sample)
+                        neg_id=neg_result.deal.id
+                        if neg_id != pos_id:
+                            if neg_id in deal_dict:
+                                neg_samples.append(deal_dict.index(neg_id))
+                            else:
+                                neg_samples.append(len(deal_dict))
+                                deal_dict.append(neg_id)
                             break
-
         data.append([hist,neg_samples])
 
 print('Number of Actual Users: ',len(data))
 
-with open('wp_pos_04-01_04-10.pkl','wb') as f:
+np.save('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy',deal_dict)
+
+with open('wp_pos_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.pkl','wb') as f:
     pickle.dump(data,f,pickle.HIGHEST_PROTOCOL)

@@ -60,6 +60,7 @@
     <Compile Include="wp_predict.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="wp_preprocess_seq.py" />
     <Compile Include="wp_preprocess.py">
       <SubType>Code</SubType>
     </Compile>
