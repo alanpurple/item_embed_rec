@@ -12,7 +12,7 @@ train_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.pkl'
 
 deal_list=np.load('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy')
 
-connect('wepickw2v',host='mongodb://localhost')
+connect('wprecdb',host='mongodb://10.102.50.46:27017')
 
 deal_dict=np.array([[0.0]*100]+[DealW2v.objects(pk=elem).first().vectorizedWords for elem in deal_list[1:]])
 
