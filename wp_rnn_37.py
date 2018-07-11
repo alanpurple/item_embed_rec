@@ -98,7 +98,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
         'accuracy':tf.metrics.accuracy(labels,predicted),
         'auc':tf.metrics.auc(tf.ones_like(prob),prob)
         }
-    return tf.estimator.EstimatorSpec(mode,loss=loss,eval_metrics=eval_metrics)
+    return tf.estimator.EstimatorSpec(mode,loss=loss,eval_metric=eval_metrics)
 
 
 if __name__ == '__main__':
