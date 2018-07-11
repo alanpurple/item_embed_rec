@@ -64,6 +64,9 @@
     <Compile Include="wp_preprocess.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="wp_rnn_37.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />

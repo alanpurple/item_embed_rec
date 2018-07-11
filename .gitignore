@@ -10,3 +10,4 @@ model_log
 *.csv
 /lr_tf_models
 *pb2*.py
+/seq_models

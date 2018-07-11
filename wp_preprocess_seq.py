@@ -14,7 +14,7 @@ from models import WepickDeal
 HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
 
-train_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'.pkl'
+train_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.pkl'
 
 connect('wepickw2v',host='mongodb://localhost')
 
@@ -29,7 +29,7 @@ print('Number of Users: ',len(wepickdata))
 # fake randomness variable
 interrupter=0
 
-deal_dict=[]
+deal_dict=[0]
 
 for elem in wepickdata:
     if len(elem['docs'])>20 and len(elem['docs'])<40:
@@ -74,5 +74,5 @@ print('Number of Actual Users: ',len(data))
 
 np.save('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy',deal_dict)
 
-with open('wp_pos_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.pkl','wb') as f:
+with open(train_data_path,'wb') as f:
     pickle.dump(data,f,pickle.HIGHEST_PROTOCOL)
