@@ -96,7 +96,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
         return tf.estimator.EstimatorSpec(mode,loss=loss,train_op=train_op)
     eval_metrics={
         'accuracy':tf.metrics.accuracy(labels,predicted),
-        'auc':tf.metrics.auc(tf.ones_like(prob),prob)
+        'auc':tf.metrics.auc(labels,prob)
         }
     return tf.estimator.EstimatorSpec(mode,loss=loss,eval_metric_ops=eval_metrics)
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
         data=pickle.load(f)
     train_x,train_y,test_x,test_y=make_input_nda(data)
 
-    train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,10000,4)
+    train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,30000,4)
     test_input_fn=tf.estimator.inputs.numpy_input_fn(test_x,test_y,4,1,False)
 
     wp_rnn_classifier=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_models',
@@ -118,7 +118,7 @@ if __name__ == '__main__':
                                                  'dropout_output_keep':0.9
                                                  })
 
-    train_spec=tf.estimator.TrainSpec(input_fn=train_input_fn,max_steps=10000)
+    train_spec=tf.estimator.TrainSpec(input_fn=train_input_fn,max_steps=30000)
     eval_spec=tf.estimator.EvalSpec(input_fn=test_input_fn)
 
     tf.estimator.train_and_evaluate(wp_rnn_classifier,train_spec,eval_spec)
