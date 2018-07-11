@@ -106,7 +106,7 @@ if __name__ == '__main__':
         data=pickle.load(f)
     train_x,train_y,test_x,test_y=make_input_nda(data)
 
-    train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,1000,4)
+    train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,10000,4)
     test_input_fn=tf.estimator.inputs.numpy_input_fn(test_x,test_y,4,1,False)
 
     wp_rnn_classifier=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_models',
