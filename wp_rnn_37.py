@@ -118,7 +118,7 @@ if __name__ == '__main__':
                                                  'dropout_output_keep':0.9
                                                  })
 
-    train_spec=tf.estimator.TrainSpec(input_fn=train_input_fn,max_steps=1000)
+    train_spec=tf.estimator.TrainSpec(input_fn=train_input_fn,max_steps=10000)
     eval_spec=tf.estimator.EvalSpec(input_fn=test_input_fn)
 
     tf.estimator.train_and_evaluate(wp_rnn_classifier,train_spec,eval_spec)
