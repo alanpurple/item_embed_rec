@@ -77,8 +77,8 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     _,state=tf.nn.dynamic_rnn(cell,input_emb,seq_len,dtype=tf.float64)
     if rnn_depth!=1:
         state=state[-1]
-
-    logits=tf.layers.dense(state,2)
+    dense1=tf.layers.dense(state,40)
+    logits=tf.layers.dense(dense1,2)
     predicted=tf.argmax(logits,1)
     prob=tf.sigmoid(logits[:,1])
     if mode==tf.estimator.ModeKeys.PREDICT:
