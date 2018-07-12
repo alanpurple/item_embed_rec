@@ -77,25 +77,23 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     _,state=tf.nn.dynamic_rnn(cell,input_emb,seq_len,dtype=tf.float64)
     if rnn_depth!=1:
         state=state[-1]
-    dense1=tf.layers.dense(state,40)
-    logits=tf.layers.dense(dense1,2)
-    predicted=tf.argmax(logits,1)
-    prob=tf.sigmoid(logits[:,1])
+    dense1=tf.layers.dense(state,40,tf.nn.relu)
+    logits=tf.layers.dense(dense1,1)
+    logits=tf.transpose(logits,[1,0])[0]
+    prob=tf.nn.sigmoid(logits)
     if mode==tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(
             mode=mode,
             prediction={
-                'class':predicted,
                 # probability for 1
                 'prob':prob
                 })
-    loss=tf.losses.softmax_cross_entropy(tf.one_hot(labels,depth=2),logits)
+    loss=tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.cast(labels,tf.float64),logits=logits))
     if mode==tf.estimator.ModeKeys.TRAIN:
         optimizer=tf.train.AdamOptimizer()
         train_op=optimizer.minimize(loss,tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode,loss=loss,train_op=train_op)
     eval_metrics={
-        'accuracy':tf.metrics.accuracy(labels,predicted),
         'auc':tf.metrics.auc(labels,prob)
         }
     return tf.estimator.EstimatorSpec(mode,loss=loss,eval_metric_ops=eval_metrics)
