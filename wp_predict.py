@@ -1,3 +1,4 @@
+import tensorflow as tf
 import pickle
 import pandas as pd
 from sklearn.externals import joblib
@@ -33,11 +34,9 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             deal=DealW2v.objects(pk=elem['deal'].id).first()
             if deal!=None:
                 deal_vec=deal.vectorizedWords
-                if(len(deal_vec))==100:
-                    if deal_vec[0]!=0 and deal_vec[1]!=0 and deal_vec[2]!=0:
-                        predict_input.append(user_profile+deal_vec)
-                        deal_slots.append(int(elem.id[-2:]))
-                        deal_ids.append(elem['deal'].id)
+                predict_input.append(user_profile+deal_vec)
+                deal_slots.append(int(elem.id[-2:]))
+                deal_ids.append(elem['deal'].id)
         predict_input=scaler.transform(predict_input)
 
         if request.methodName=='dnn_tf':
@@ -51,6 +50,10 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
         elif request.methodName=='logistic':
             lr=joblib.load('wplr.pkl')
             probs=lr.predict_proba(predict_input)[:,1]
+
+        #elif request.methodName=='rnn':
+        #    rnn_predictor=tf.contrib.predictor.from_saved_model('./seq_models')
+        #    rnn_predictor.predict()
 
         elif request.methodName=='logistic_tf':
             pass
