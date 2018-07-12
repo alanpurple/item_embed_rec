@@ -79,7 +79,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
         state=state[-1]
     dense1=tf.layers.dense(state,40,tf.nn.relu)
     logits=tf.layers.dense(dense1,1)
-    logits=tf.transpose(logits,[1,0])[0]
+    logits=tf.squeeze(logits)
     prob=tf.nn.sigmoid(logits)
     if mode==tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(
