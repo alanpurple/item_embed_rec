@@ -4,7 +4,7 @@ from sklearn.externals import joblib
 import numpy as np
 from mongoengine import connect
 from mongoengine.errors import DoesNotExist
-import pickle
+import json
 from os import path
 
 from models import DealW2v
@@ -14,7 +14,7 @@ from models import WepickDeal
 HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
 
-train_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.pkl'
+data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.json'
 
 connect('wepickw2v',host='mongodb://localhost')
 
@@ -30,6 +30,8 @@ print('Number of Users: ',len(wepickdata))
 interrupter=0
 
 deal_dict=[0]
+
+user_profile_seq=[]
 
 for elem in wepickdata:
     if len(elem['docs'])>20 and len(elem['docs'])<40:
@@ -68,11 +70,21 @@ for elem in wepickdata:
                                 neg_samples.append(len(deal_dict))
                                 deal_dict.append(neg_id)
                             break
-        data.append([hist,neg_samples])
+        data.append({'id':elem['_id'],'pos':hist,'neg':neg_samples})
+
+goal_data=PosData.objects(TransDate='2018-04-11 21',WepickRank__gte=20).aggregate(
+        *[{'$group':{'_id':'$DealId'}}],allowDiskUse=True)
+goal_list=[elem['_id'] for elem in goal_data]
+
+for id in goal_list:
+    deal=DealW2v.objects(pk=id).first()
+    if deal != None:
+        if id not in deal_dict:
+            deal_dict.append(id)
 
 print('Number of Actual Users: ',len(data))
 
 np.save('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy',deal_dict)
 
-with open(train_data_path,'wb') as f:
-    pickle.dump(data,f,pickle.HIGHEST_PROTOCOL)
+with open(data_path,'wb') as f:
+    json.dump(data,f)

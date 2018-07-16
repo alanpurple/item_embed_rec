@@ -22,6 +22,7 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             return wprecservice_pb2.RecommendResponse(error=0)
 
         profile_data_path='profile_'+request.dayFrom+'_'+request.dayTo+'.csv'
+        profile_seq_path='wp_'+request.dayFrom+'_'+request.dayTo+'_seq.pkl'
 
         profile_df=pd.read_csv(profile_data_path,index_col=0)
         user_profile=profile_df.loc[request.user].tolist()
@@ -51,9 +52,10 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             lr=joblib.load('wplr.pkl')
             probs=lr.predict_proba(predict_input)[:,1]
 
-        #elif request.methodName=='rnn':
-        #    rnn_predictor=tf.contrib.predictor.from_saved_model('./seq_models')
-        #    rnn_predictor.predict()
+        elif request.methodName=='rnn':
+
+            rnn_predictor=tf.contrib.predictor.from_saved_model('./seq_models')
+            rnn_predictor.predict()
 
         elif request.methodName=='logistic_tf':
             pass
