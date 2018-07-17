@@ -10,6 +10,8 @@ from models import DealW2v
 from models import PosData
 from models import WepickDeal
 
+from wp_rnn_37 import wp_rnn_classifier_fn
+
 import wprecservice_pb2
 import wprecservice_pb2_grpc
 
@@ -38,7 +40,7 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
 
         profile_df=pd.read_csv(profile_data_path,index_col=0)
         user_profile=profile_df.loc[request.user].tolist()
-        deal_list=np.load('dict_'+request.dayFrom+'_'+request.predictMoment[5:]+'.npy')
+        deal_list=np.load('dict_'+request.dayFrom+'_'+request.predictMoment[5:-3]+'.npy')
         deals=WepickDeal.objects(pk__gte=request.predictMoment+' 20',pk__lte=request.predictMoment+' 99')
         scaler=joblib.load('scaler.pkl')
         deal_slots=[]
@@ -52,7 +54,7 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
                 predict_input.append(user_profile+deal_vec)
                 deal_slots.append(int(elem.id[-2:]))
                 deal_ids.append(elem['deal'].id)
-                predict_seq_input.append(user_seq+[elem['deal'].id]+[0]*37-len(user_seq))
+                predict_seq_input.append(user_seq+[elem['deal'].id]+[0]*(37-len(user_seq)))
         predict_input=scaler.transform(predict_input)
         predict_seq_lens=[len(user_seq)+1]*len(predict_seq_input)
 
@@ -69,8 +71,16 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             probs=lr.predict_proba(predict_input)[:,1]
 
         elif request.methodName=='rnn':
-            predict_input_fn=tf.estimator.inputs.numpy_input_fn({'seq':np.array(predict_seq_input),'seq_len':np.array(predict_seq_lens)})
-            rnn_predictor=tf.contrib.predictor.from_saved_model('./seq_models')
+            deal_dict=np.array([[0.0]*100]+[DealW2v.objects(pk=elem).first().vectorizedWords for elem in deal_list[1:]])
+            predict_input_fn=tf.estimator.inputs.numpy_input_fn({'seq':np.array(predict_seq_input),'seq_len':np.array(predict_seq_lens)},shuffle=False)
+            rnn_predictor=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_models',
+                                             params={
+                                                 'dict':deal_dict,
+                                                 'rnn_depth':3,
+                                                 'use_dropout':True,
+                                                 'dropout_input_keep':0.9,
+                                                 'dropout_output_keep':0.9
+                                                 })
             result=rnn_predictor.predict(predict_input_fn)
             probs=[elem['prob'] for elem in result]
 

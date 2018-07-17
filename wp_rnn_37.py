@@ -82,7 +82,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     if mode==tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(
             mode=mode,
-            prediction={
+            predictions={
                 # probability for 1
                 'prob':prob
                 })
