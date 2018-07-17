@@ -1,18 +1,19 @@
 import tensorflow as tf
 import numpy as np
-import pickle
+import json
 
 from mongoengine import connect
 from models import DealW2v
 
 HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
+DEAL_TO='04-11'
 
-train_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.pkl'
+seq_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.json'
 
-deal_list=np.load('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy')
+deal_list=np.load('dict_'+HISTORY_FROM+'_'+DEAL_TO+'.npy')
 
-connect('wprecdb',host='mongodb://10.102.50.46:27017')
+connect('wepickw2v',host='mongodb://localhost')
 
 deal_dict=np.array([[0.0]*100]+[DealW2v.objects(pk=elem).first().vectorizedWords for elem in deal_list[1:]])
 
@@ -24,11 +25,11 @@ def make_input_nda(data):
     test_lens=[]
     test_labels=[]
     # per user
-    for pair in data:
-        hist_len=len(pair[0])
+    for elem in data:
+        hist=elem['pos']
+        hist_len=len(hist)
         assert hist_len<40
-        hist=pair[0]
-        neg=pair[1]
+        neg=elem['neg']
         # make 10 data per user( 5 pos, 5 neg )
         for i in range(hist_len-6,hist_len-1):
             # max length of 38 ( 37 history and 1 output )
@@ -59,12 +60,8 @@ def make_input_nda(data):
 def wp_rnn_classifier_fn(features,labels,mode,params):
     seq_len=features['seq_len']
     input_seq=features['seq']
-    if mode!=tf.estimator.ModeKeys.PREDICT:
-        deal_emb=params['dict']
-        input_emb=tf.nn.embedding_lookup(deal_emb,input_seq)
-    else:
-        input_emb=input_seq
-    rnn_depth=params['rnn_depth']
+    deal_emb=params['dict']
+    input_emb=tf.nn.embedding_lookup(deal_emb,input_seq)
     if rnn_depth==1:
         cell=tf.nn.rnn_cell.GRUCell(100)
         if params['use_dropout']:
@@ -100,8 +97,8 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
 
 
 if __name__ == '__main__':
-    with open(train_data_path,'rb') as f:
-        data=pickle.load(f)
+    with open(data_path,'rb') as f:
+        data=json.load(f)
     train_x,train_y,test_x,test_y=make_input_nda(data)
 
     train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,30000,4)

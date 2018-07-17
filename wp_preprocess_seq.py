@@ -13,6 +13,7 @@ from models import WepickDeal
 
 HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
+DEAL_TO='04-11'
 
 data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.json'
 
@@ -84,7 +85,7 @@ for id in goal_list:
 
 print('Number of Actual Users: ',len(data))
 
-np.save('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy',deal_dict)
+np.save('dict_'+HISTORY_FROM+'_'+DEAL_TO+'.npy',deal_dict)
 
 with open(data_path,'wb') as f:
     json.dump(data,f)
