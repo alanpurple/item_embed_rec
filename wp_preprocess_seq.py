@@ -17,7 +17,7 @@ DEAL_TO='04-11'
 
 data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.json'
 
-connect('wepickw2v',host='mongodb://localhost')
+connect('wprec',host='mongodb://10.102.61.251:27017')
 
 wepickdata=PosData.objects(TransDate__gte='2018-'+HISTORY_FROM+' 00',TransDate__lte='2018-'+HISTORY_TO+' 23',WepickRank__gte=20,WepickRank__lte=55).aggregate(
     *[{'$group':{'_id':'$UserId','docs':{'$push':'$$ROOT'}}}],allowDiskUse=True)
@@ -87,5 +87,5 @@ print('Number of Actual Users: ',len(data))
 
 np.save('dict_'+HISTORY_FROM+'_'+DEAL_TO+'.npy',deal_dict)
 
-with open(data_path,'wb') as f:
+with open(data_path,'w') as f:
     json.dump(data,f)

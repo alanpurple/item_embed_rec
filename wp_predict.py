@@ -13,7 +13,7 @@ from models import WepickDeal
 import wprecservice_pb2
 import wprecservice_pb2_grpc
 
-connect('wepickw2v',host='mongodb://localhost')
+connect('wprec',host='mongodb://10.102.61.251:27017')
 # this should be set to user input, this values are temporary
 HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
@@ -26,7 +26,7 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
 
         profile_data_path='profile_'+request.dayFrom+'_'+request.dayTo+'.csv'
         data_seq_path='wp_'+request.dayFrom+'_'+request.dayTo+'_seq.json'
-        with open(data_seq_path,'rb') as f:
+        with open(data_seq_path,'r') as f:
             seq_data=json.load(f)
         for elem in seq_data:
             if elem['id']==request.user:

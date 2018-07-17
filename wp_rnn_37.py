@@ -13,7 +13,7 @@ seq_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.json'
 
 deal_list=np.load('dict_'+HISTORY_FROM+'_'+DEAL_TO+'.npy')
 
-connect('wepickw2v',host='mongodb://localhost')
+connect('wprec',host='mongodb://10.102.61.251:27017')
 
 deal_dict=np.array([[0.0]*100]+[DealW2v.objects(pk=elem).first().vectorizedWords for elem in deal_list[1:]])
 
@@ -62,6 +62,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     input_seq=features['seq']
     deal_emb=params['dict']
     input_emb=tf.nn.embedding_lookup(deal_emb,input_seq)
+    rnn_depth=params['rnn_depth']
     if rnn_depth==1:
         cell=tf.nn.rnn_cell.GRUCell(100)
         if params['use_dropout']:
@@ -97,7 +98,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
 
 
 if __name__ == '__main__':
-    with open(data_path,'rb') as f:
+    with open(seq_data_path,'r') as f:
         data=json.load(f)
     train_x,train_y,test_x,test_y=make_input_nda(data)
 
