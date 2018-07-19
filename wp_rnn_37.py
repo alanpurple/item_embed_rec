@@ -9,6 +9,8 @@ HISTORY_FROM='04-01'
 HISTORY_TO='04-10'
 DEAL_TO='04-11'
 
+USE_BIDIR=True
+
 seq_data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_seq.json'
 
 deal_list=np.load('dict_'+HISTORY_FROM+'_'+DEAL_TO+'.npy')
@@ -126,11 +128,16 @@ if __name__ == '__main__':
     train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,30000,4)
     test_input_fn=tf.estimator.inputs.numpy_input_fn(test_x,test_y,4,1,False)
 
-    wp_rnn_classifier=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_bi_models',
+    if USE_BIDIR:
+        model_path='./seq_bi_models'
+    else:
+        model_path='./seq_models'
+
+    wp_rnn_classifier=tf.estimator.Estimator(wp_rnn_classifier_fn,model_path,
                                              params={
                                                  'dict':deal_dict,
                                                  'rnn_depth':3,
-                                                 'bidirectional':True,
+                                                 'bidirectional':USE_BIDIR,
                                                  'use_dropout':True,
                                                  'dropout_input_keep':0.9,
                                                  'dropout_output_keep':0.9
