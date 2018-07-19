@@ -65,13 +65,13 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     rnn_depth=params['rnn_depth']
     if rnn_depth==1:
         cell=tf.nn.rnn_cell.GRUCell(100)
-        if params['use_dropout']:
+        if params['use_dropout'] and mode!=tf.estimator.ModeKeys.PREDICT:
             cell=tf.nn.rnn_cell.DropoutWrapper(cell,params['dropout_input_keep'],params['dropout_output_keep'])
     else:
         cell=[tf.nn.rnn_cell.GRUCell(100) for _ in range(rnn_depth)]
-        if params['use_dropout']:
+        if params['use_dropout'] and mode!=tf.estimator.ModeKeys.PREDICT:
             cell=[tf.nn.rnn_cell.DropoutWrapper(elem,params['dropout_input_keep'],params['dropout_output_keep']) for elem in cell]
-            cell=tf.nn.rnn_cell.MultiRNNCell(cell)
+        cell=tf.nn.rnn_cell.MultiRNNCell(cell)
     _,state=tf.nn.dynamic_rnn(cell,input_emb,seq_len,dtype=tf.float64)
     if rnn_depth!=1:
         state=state[-1]

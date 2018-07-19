@@ -84,6 +84,8 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             result=rnn_predictor.predict(predict_input_fn)
             probs=[elem['prob'] for elem in result]
 
+        #elif request.methodName=='rnn_bi':
+
         elif request.methodName=='logistic_tf':
             pass
         elif request.methodName=='boosted_tree_tf':
