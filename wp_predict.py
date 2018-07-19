@@ -70,21 +70,24 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             lr=joblib.load('wplr.pkl')
             probs=lr.predict_proba(predict_input)[:,1]
 
-        elif request.methodName=='rnn':
+        elif request.methodName=='rnn' or request.methodName=='rnn_bi':
+            if request.methodName=='rnn':
+                model_path='./seq_models'
+            else:
+                model_path='./seq_bi_models'
             deal_dict=np.array([[0.0]*100]+[DealW2v.objects(pk=elem).first().vectorizedWords for elem in deal_list[1:]])
             predict_input_fn=tf.estimator.inputs.numpy_input_fn({'seq':np.array(predict_seq_input),'seq_len':np.array(predict_seq_lens)},shuffle=False)
-            rnn_predictor=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_models',
+            rnn_predictor=tf.estimator.Estimator(wp_rnn_classifier_fn,model_path,
                                              params={
                                                  'dict':deal_dict,
                                                  'rnn_depth':3,
+                                                 'bidirectional':request.methodName=='rnn_bi',
                                                  'use_dropout':True,
                                                  'dropout_input_keep':0.9,
                                                  'dropout_output_keep':0.9
                                                  })
             result=rnn_predictor.predict(predict_input_fn)
             probs=[elem['prob'] for elem in result]
-
-        #elif request.methodName=='rnn_bi':
 
         elif request.methodName=='logistic_tf':
             pass
