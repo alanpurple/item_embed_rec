@@ -84,9 +84,9 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     
     if params['bidirectional']:
         if rnn_depth==1:
-            _,state,state_bw=tf.contrib.rnn.stack_bidirectional_dynamic_rnn([cell],[cell_bw],dtype=tf.float64,sequence_length=seq_len)
+            _,state,state_bw=tf.contrib.rnn.stack_bidirectional_dynamic_rnn([cell],[cell_bw],input_emb,dtype=tf.float64,sequence_length=seq_len)
         else:
-            _,state,state_bw=tf.contrib.rnn.stack_bidirectional_dynamic_rnn([cell],[cell_bw],dtype=tf.float64,sequence_length=seq_len)
+            _,state,state_bw=tf.contrib.rnn.stack_bidirectional_dynamic_rnn([cell],[cell_bw],input_emb,dtype=tf.float64,sequence_length=seq_len)
     else:
         if rnn_depth>1:
             cell=tf.nn.rnn_cell.MultiRNNCell(cell)
