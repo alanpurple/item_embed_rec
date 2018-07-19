@@ -65,16 +65,37 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     rnn_depth=params['rnn_depth']
     if rnn_depth==1:
         cell=tf.nn.rnn_cell.GRUCell(100)
+        if params['bidirectional']:
+            cell_bw=tf.nn.rnn_cell.GRUCell(100)
         if params['use_dropout'] and mode!=tf.estimator.ModeKeys.PREDICT:
             cell=tf.nn.rnn_cell.DropoutWrapper(cell,params['dropout_input_keep'],params['dropout_output_keep'])
+            if params['bidirectional']:
+                cell_bw=tf.nn.rnn_cell.DropoutWrapper(cell_bw,params['dropout_input_keep'],params['dropout_output_keep'])
     else:
         cell=[tf.nn.rnn_cell.GRUCell(100) for _ in range(rnn_depth)]
+        if params['bidirectional']:
+            cell_bw=[tf.nn.rnn_cell.GRUCell(100) for _ in range(rnn_depth)]
         if params['use_dropout'] and mode!=tf.estimator.ModeKeys.PREDICT:
             cell=[tf.nn.rnn_cell.DropoutWrapper(elem,params['dropout_input_keep'],params['dropout_output_keep']) for elem in cell]
-        cell=tf.nn.rnn_cell.MultiRNNCell(cell)
-    _,state=tf.nn.dynamic_rnn(cell,input_emb,seq_len,dtype=tf.float64)
+            if params['bidirectional']:
+                cell_bw=[tf.nn.rnn_cell.DropoutWrapper(elem,params['dropout_input_keep'],params['dropout_output_keep']) for elem in cell_bw]
+    
+    if params['bidirectional']:
+        if rnn_depth==1:
+            _,state,state_bw=tf.contrib.rnn.stack_bidirectional_dynamic_rnn([cell],[cell_bw],dtype=tf.float64,sequence_length=seq_len)
+        else:
+            _,state,state_bw=tf.contrib.rnn.stack_bidirectional_dynamic_rnn([cell],[cell_bw],dtype=tf.float64,sequence_length=seq_len)
+    else:
+        if rnn_depth>1:
+            cell=tf.nn.rnn_cell.MultiRNNCell(cell)
+        _,state=tf.nn.dynamic_rnn(cell,input_emb,seq_len,dtype=tf.float64)
     if rnn_depth!=1:
         state=state[-1]
+        if params['bidirectional']:
+            state_bw=state_bw[-1]
+    if params['bidirectional']:
+        state=tf.concat([state,state_bw],1)
+        state=tf.layers.dense(state,100)
     dense1=tf.layers.dense(state,40,tf.nn.relu)
     logits=tf.layers.dense(dense1,1)
     logits=tf.squeeze(logits)
@@ -105,10 +126,11 @@ if __name__ == '__main__':
     train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,30000,4)
     test_input_fn=tf.estimator.inputs.numpy_input_fn(test_x,test_y,4,1,False)
 
-    wp_rnn_classifier=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_models',
+    wp_rnn_classifier=tf.estimator.Estimator(wp_rnn_classifier_fn,'./seq_bi_models',
                                              params={
                                                  'dict':deal_dict,
                                                  'rnn_depth':3,
+                                                 'bidirectional':True,
                                                  'use_dropout':True,
                                                  'dropout_input_keep':0.9,
                                                  'dropout_output_keep':0.9
