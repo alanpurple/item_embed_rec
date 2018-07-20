@@ -69,7 +69,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
         cell=tf.nn.rnn_cell.GRUCell(100)
         if params['bidirectional']:
             cell_bw=tf.nn.rnn_cell.GRUCell(100)
-        if params['use_dropout'] and mode!=tf.estimator.ModeKeys.PREDICT:
+        if params['use_dropout']:# and mode!=tf.estimator.ModeKeys.PREDICT:
             cell=tf.nn.rnn_cell.DropoutWrapper(cell,params['dropout_input_keep'],params['dropout_output_keep'])
             if params['bidirectional']:
                 cell_bw=tf.nn.rnn_cell.DropoutWrapper(cell_bw,params['dropout_input_keep'],params['dropout_output_keep'])
@@ -77,7 +77,7 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
         cell=[tf.nn.rnn_cell.GRUCell(100) for _ in range(rnn_depth)]
         if params['bidirectional']:
             cell_bw=[tf.nn.rnn_cell.GRUCell(100) for _ in range(rnn_depth)]
-        if params['use_dropout'] and mode!=tf.estimator.ModeKeys.PREDICT:
+        if params['use_dropout']:# and mode!=tf.estimator.ModeKeys.PREDICT:
             cell=[tf.nn.rnn_cell.DropoutWrapper(elem,params['dropout_input_keep'],params['dropout_output_keep']) for elem in cell]
             if params['bidirectional']:
                 cell_bw=[tf.nn.rnn_cell.DropoutWrapper(elem,params['dropout_input_keep'],params['dropout_output_keep']) for elem in cell_bw]
