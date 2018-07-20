@@ -125,7 +125,7 @@ if __name__ == '__main__':
         data=json.load(f)
     train_x,train_y,test_x,test_y=make_input_nda(data)
 
-    train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,5,True,30000,4)
+    train_input_fn=tf.estimator.inputs.numpy_input_fn(train_x,train_y,32,20,True,120000,4)
     test_input_fn=tf.estimator.inputs.numpy_input_fn(test_x,test_y,4,1,False)
 
     if USE_BIDIR:
@@ -143,7 +143,7 @@ if __name__ == '__main__':
                                                  'dropout_output_keep':0.9
                                                  })
 
-    train_spec=tf.estimator.TrainSpec(input_fn=train_input_fn,max_steps=30000)
+    train_spec=tf.estimator.TrainSpec(input_fn=train_input_fn,max_steps=120000)
     eval_spec=tf.estimator.EvalSpec(input_fn=test_input_fn)
 
     tf.estimator.train_and_evaluate(wp_rnn_classifier,train_spec,eval_spec)
