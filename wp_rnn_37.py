@@ -97,9 +97,9 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
             state_bw=state_bw[-1]
     if params['bidirectional']:
         state=tf.concat([state,state_bw],1)
-        state=tf.layers.dense(state,100,tf.nn.relu)
-    dense1=tf.layers.dense(state,40,tf.nn.relu)
-    logits=tf.layers.dense(dense1,1)
+        state=tf.layers.dense(state,100,tf.nn.relu,True,tf.contrib.layers.l2_regularizer(0.001))
+    dense1=tf.layers.dense(state,40,tf.nn.relu,True,tf.contrib.layers.l2_regularizer(0.001))
+    logits=tf.layers.dense(dense1,1,None,True,tf.contrib.layers.l2_regularizer(0.001))
     logits=tf.squeeze(logits)
     prob=tf.nn.sigmoid(logits)
     if mode==tf.estimator.ModeKeys.PREDICT:
@@ -113,8 +113,8 @@ def wp_rnn_classifier_fn(features,labels,mode,params):
     if mode==tf.estimator.ModeKeys.TRAIN:
         optimizer=tf.train.AdamOptimizer(0.0005)
         grads_and_vars=optimizer.compute_gradients(loss)
-        #grads=[elem[0] for elem in grads_and_vars]
-        #tf.summary.scalar('gradient',grads)
+        grads=[elem[0] for elem in grads_and_vars]
+        tf.summary.scalar('gradient',grads)
         train_op=optimizer.apply_gradients(grads_and_vars,tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode,loss=loss,train_op=train_op)
     eval_metrics={
