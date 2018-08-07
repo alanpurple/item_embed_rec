@@ -25,7 +25,7 @@ deal_dict=[]
 
 
 for elem in wepickdata:
-    if len(elem['docs'])>20 and len(elem['docs'])<60:
+    if len(elem['docs'])>20 and len(elem['docs'])<40:
         user_dict.append(elem['_id'])
         hist=[]
         for doc in elem['docs']:
