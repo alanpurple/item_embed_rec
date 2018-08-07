@@ -39,7 +39,7 @@ for elem in wepickdata:
                     deal_dict.append(pos_id)
                 
         data.append(hist)
-    if len(data)>30000:
+    if len(data)>7000:
         break
 
 goal_data=PosData.objects(TransDate='2018-04-11 21',WepickRank__gte=20).aggregate(
