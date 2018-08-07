@@ -23,6 +23,9 @@
     <Compile Include="din_model.py" />
     <Compile Include="gbc.py" />
     <Compile Include="input.py" />
+    <Compile Include="make_pos_sparse.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\dealw2v.py">
       <SubType>Code</SubType>
     </Compile>
@@ -42,6 +45,9 @@
     <Compile Include="preprocessing_ml.py" />
     <Compile Include="run_server.py" />
     <Compile Include="temporary_test.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tf_wals.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="train.py" />

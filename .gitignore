@@ -12,3 +12,4 @@ model_log
 *pb2*.py
 /seq_models
 /seq_bi_models
+/walsmodels
