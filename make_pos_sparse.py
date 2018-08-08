@@ -25,7 +25,7 @@ deal_dict=[]
 
 
 for elem in wepickdata:
-    if len(elem['docs'])>20 and len(elem['docs'])<40:
+    if len(elem['docs'])>20 and len(elem['docs'])<60:
         user_dict.append(elem['_id'])
         hist=[]
         for doc in elem['docs']:
@@ -39,7 +39,7 @@ for elem in wepickdata:
                     deal_dict.append(pos_id)
                 
         data.append(hist)
-    if len(data)>7000:
+    if len(data)>30000:
         break
 
 goal_data=PosData.objects(TransDate='2018-04-11 21',WepickRank__gte=20).aggregate(

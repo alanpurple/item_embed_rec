@@ -47,6 +47,7 @@
     <Compile Include="temporary_test.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="tf_wals_low.py" />
     <Compile Include="tf_wals.py">
       <SubType>Code</SubType>
     </Compile>
