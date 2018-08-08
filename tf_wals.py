@@ -47,6 +47,6 @@ if __name__=='__main__':
         return {'input_rows':sp_mat,'input_cols':sp_mat_t},None
 
 
-    estimator=wmf(num_rows,num_cols,dimension,model_dir='./walsmodels')
+    estimator=wmf(num_rows,num_cols,dimension,regularization_coeff=9.8,model_dir='./walsmodels',max_sweeps=30)
 
     estimator.fit(input_fn=sparse_input)
