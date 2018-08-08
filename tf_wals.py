@@ -41,12 +41,17 @@ if __name__=='__main__':
         indices_t+=zip(elem,[idx]*len(elem))
         values+=[1.0]*len(elem)
 
+    
     def sparse_input():
         sp_mat=tf.SparseTensor(indices,values,[num_rows,num_cols])
         sp_mat_t=tf.SparseTensor(indices_t,values,[num_rows,num_cols])
-        return {'input_rows':sp_mat,'input_cols':sp_mat_t},None
+        mat_slices=tf.data.Dataset.from_tensor_slices(sp_mat)
+        mat_t_slices=tf.data.Dataset.from_tensor_slices(sp_mat_t)
+        iter1=mat_slices.make_one_shot_iterator()
+        iter2=mat_t_slices.make_one_shot_iterator()
+        return {'input_rows':iter1.next(),'input_cols':iter2.next()},None
 
 
-    estimator=wmf(num_rows,num_cols,dimension,regularization_coeff=9.8,model_dir='./walsmodels',max_sweeps=30)
+    estimator=wmf(num_rows,num_cols,dimension,0.01,9.8,model_dir='./walsmodels')
 
     estimator.fit(input_fn=sparse_input)
