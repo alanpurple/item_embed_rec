@@ -47,9 +47,7 @@ if __name__=='__main__':
         sp_mat_t=tf.SparseTensor(indices_t,values,[num_rows,num_cols])
         mat_slices=tf.data.Dataset.from_tensor_slices(sp_mat)
         mat_t_slices=tf.data.Dataset.from_tensor_slices(sp_mat_t)
-        iter1=mat_slices.make_one_shot_iterator()
-        iter2=mat_t_slices.make_one_shot_iterator()
-        return {'input_rows':iter1.get_next(),'input_cols':iter2.get_next()},None
+        return {'input_rows':mat_slices,'input_cols':mat_t_slices},None
 
 
     estimator=wmf(num_rows,num_cols,dimension,0.01,9.8,model_dir='./walsmodels')
