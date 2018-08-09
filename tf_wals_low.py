@@ -20,6 +20,15 @@ print('number of items: ',num_cols)
 dimension=30
 n_iter=30
 
+deal_finder=dict(zip(deal_dict,range(num_cols)))
+goal_data=PosData.objects(TransDate='2018-04-11 21',WepickRank__gte=20).aggregate(
+        *[{'$group':{'_id':'$DealId'}}],allowDiskUse=True)
+goal_list=[elem['_id'] for elem in goal_data]
+target=[]
+for elem in goal_list:
+    if elem in deal_dict:
+        target.append(elem)
+
 if __name__=='__main__':
     with open(data_path,'r') as f:
         data=json.load(f)
@@ -63,3 +72,15 @@ if __name__=='__main__':
 
     print(output_row[16000])
     print(output_col[700])
+
+    temp_users=user_dict[100000:100010]
+
+    for i in range(100000,100010):
+        print('===========================')
+        print('user id: ',user_dict[i])
+        for j in range(len(target)):
+            print('***')
+            print('item id: ',target[j])
+            target_index=deal_finder[target[j]]
+            print('score: ',sum(output_rows[i][:]*output_cols[target_index]))
+
