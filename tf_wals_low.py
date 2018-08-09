@@ -87,5 +87,5 @@ if __name__=='__main__':
             print('***')
             print('item id: ',target[j])
             target_index=deal_finder[target[j]]
-            print('score: ',sum(output_rows[i][:]*output_cols[target_index]))
+            print('score: ',sum(output_row[i][:]*output_col[target_index]))
 
