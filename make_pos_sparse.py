@@ -6,22 +6,27 @@ from models import DealW2v
 from models import PosData
 from models import WepickDeal
 
-HISTORY_FROM='04-01'
+HISTORY_FROM='03-21'
 HISTORY_TO='04-10'
-DEAL_TO='04-11'
 
 data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_sparse.json'
 
 connect('wprec',host='mongodb://10.102.61.251:27017')
+cursor=PosData.objects(TransDate__gte='2018-'+HISTORY_FROM+' 00',TransDate__lte='2018-'+HISTORY_TO+' 23',WepickRank__gte=20,WepickRank__lte=65)
+items=cursor.distinct('DealId')
+unique_items=sorted([elem.id for elem in items])
+num_items=len(unique_items)
+print('number of items: ',num_items)
+item_finder=dict(zip(unique_items,range(num_items)))
 
-wepickdata=PosData.objects(TransDate__gte='2018-'+HISTORY_FROM+' 00',TransDate__lte='2018-'+HISTORY_TO+' 23',WepickRank__gte=20,WepickRank__lte=65).aggregate(
-    *[{'$group':{'_id':'$UserId','docs':{'$push':'$$ROOT'}}}],allowDiskUse=True)
+wepickdata=cursor.aggregate(
+    *[{'$group':{'_id':'$UserId','docs':{'$push':'$DealId'}}}],allowDiskUse=True)
 # in case cursornotfounderrror caused by very long sampling times
 wepickdata=list(wepickdata)
+print('number of users: ',len(wepickdata))
 data=[]
 
 user_dict=[]
-deal_dict=[]
 
 
 for elem in wepickdata:
@@ -29,34 +34,16 @@ for elem in wepickdata:
         user_dict.append(elem['_id'])
         hist=[]
         for doc in elem['docs']:
-            pos_id=doc['DealId']
-            result=DealW2v.objects(pk=pos_id).first()
-            if result != None:
-                if pos_id in deal_dict:
-                    hist.append(deal_dict.index(pos_id))
-                else:
-                    hist.append(len(deal_dict))
-                    deal_dict.append(pos_id)
+            hist.append(item_finder[doc])
                 
         data.append(hist)
-    if len(data)>30000:
-        break
 
-goal_data=PosData.objects(TransDate='2018-04-11 21',WepickRank__gte=20).aggregate(
-        *[{'$group':{'_id':'$DealId'}}],allowDiskUse=True)
-goal_list=[elem['_id'] for elem in goal_data]
-
-for id in goal_list:
-    deal=DealW2v.objects(pk=id).first()
-    if deal != None:
-        if id not in deal_dict:
-            deal_dict.append(id)
 
 print('Number of Actual Users: ',len(data))
 
-np.save('dict_'+HISTORY_FROM+'_'+DEAL_TO+'_for_sparse.npy',deal_dict)
+np.save('dict_'+HISTORY_FROM+'_'+HISTORY_TO+'_for_sparse.npy',unique_items)
 
-np.save('user_'+HISTORY_FROM+'_'+DEAL_TO+'.npy',user_dict)
+np.save('user_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy',user_dict)
 
 with open(data_path,'w') as f:
     json.dump(data,f)
