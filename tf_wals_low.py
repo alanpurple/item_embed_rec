@@ -5,6 +5,8 @@ from tensorflow.contrib.factorization import WALSMatrixFactorization as wmf
 from tensorflow.contrib.factorization import WALSModel
 import json
 
+from models import PosData
+
 HISTORY_FROM='03-21'
 HISTORY_TO='04-10'
 
