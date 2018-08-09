@@ -12,7 +12,7 @@ HISTORY_TO='04-10'
 data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_sparse.json'
 
 connect('wprec',host='mongodb://10.102.61.251:27017')
-cursor=PosData.objects(TransDate__gte='2018-'+HISTORY_FROM+' 00',TransDate__lte='2018-'+HISTORY_TO+' 23',WepickRank__gte=20,WepickRank__lte=65)
+cursor=PosData.objects(TransDate__gte='2018-'+HISTORY_FROM+' 00',TransDate__lte='2018-'+HISTORY_TO+' 23',WepickRank__gte=20,WepickRank__lte=85)
 items=cursor.distinct('DealId')
 unique_items=sorted([elem.id for elem in items])
 num_items=len(unique_items)
@@ -30,7 +30,7 @@ user_dict=[]
 
 
 for elem in wepickdata:
-    if len(elem['docs'])>20 and len(elem['docs'])<60:
+    if len(elem['docs'])>20 and len(elem['doct'])<100:
         user_dict.append(elem['_id'])
         hist=[]
         for doc in elem['docs']:
