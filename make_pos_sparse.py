@@ -30,7 +30,7 @@ user_dict=[]
 
 
 for elem in wepickdata:
-    if len(elem['docs'])>20 and len(elem['doct'])<100:
+    if len(elem['docs'])>30 and len(elem['docs'])<200:
         user_dict.append(elem['_id'])
         hist=[]
         for doc in elem['docs']:
