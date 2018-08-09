@@ -1,5 +1,6 @@
 ﻿import tensorflow as tf
 import numpy as np
+from mongoengine import connect
 from scipy.sparse import coo_matrix
 from tensorflow.contrib.factorization import WALSMatrixFactorization as wmf
 from tensorflow.contrib.factorization import WALSModel
@@ -21,6 +22,8 @@ print('number of users: ',num_rows)
 print('number of items: ',num_cols)
 dimension=30
 n_iter=30
+
+connect('wprec',host='mongodb://10.102.61.251:27017')
 
 deal_finder=dict(zip(deal_dict,range(num_cols)))
 goal_data=PosData.objects(TransDate='2018-04-11 21',WepickRank__gte=20).aggregate(
