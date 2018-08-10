@@ -12,6 +12,8 @@ from models import WepickDeal
 
 from wp_rnn_37 import wp_rnn_classifier_fn
 
+from tf_wals_lib import wals
+
 import wprecservice_pb2
 import wprecservice_pb2_grpc
 
@@ -96,3 +98,19 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
 
         results=[{'id':deal_ids[i],'slot':deal_slots[i],'score':probs[i]} for i in range(len(predict_input))]
         return wprecservice_pb2.RecommendResponse(error=-1,result=results)
+
+    def GetMfRecommend(self, request, context):
+        if request.dayFrom=='' or request.dayTo=='' or request.predictMoment=='' or request.user==0:
+            return wprecservice_pb2.RecommendResponse(error=0)
+        if request.dimension==0:
+            request.dimension=30
+        if request.weight==0.0:
+            request.weight=0.5
+        if request.coef==0.0:
+            request.coef=2.0
+        results=wals(request.user,request.dayFrom,request.dayTo,request.predictMoment,request.dimension,request.weight,request.coef)
+
+        if results==-1:
+            return wprecservice_pb2.RecommendResponse(error=0)
+        else:
+            return wprecservice_pb2.RecommendResponse(error=-1,result=results)

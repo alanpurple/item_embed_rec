@@ -8,6 +8,19 @@ package WpRecService;
 
 service WpRecService {
 	rpc GetRecommend (RecommendRequest) returns (RecommendResponse) {}
+	rpc GetMfRecommend (MfRequest) returns (RecommendResponse) {}
+}
+
+message MfRequest {
+	string dayFrom = 1;
+	string dayTo = 2;
+	string predictMoment = 3;
+	uint32 user = 4;
+	uint32 dimension = 5;
+	// unobserved weight
+	float weight = 6;
+	// regularization coefficient
+	float coef = 7;
 }
 
 message RecommendRequest {
