@@ -6,7 +6,7 @@ from models import DealW2v
 from models import PosData
 from models import WepickDeal
 
-HISTORY_FROM='03-11'
+HISTORY_FROM='03-21'
 HISTORY_TO='04-10'
 
 data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_sparse.json'
@@ -32,7 +32,7 @@ user_dict=[]
 
 
 for elem in wepickdata:
-    if len(elem['docs'])>30:
+    if len(elem['docs'])>30 and len(elem['docs']<200):
         user_dict.append(elem['_id'])
         hist=[]
         for doc in elem['docs']:
