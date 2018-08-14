@@ -21,6 +21,7 @@ message MfRequest {
 	float weight = 6;
 	// regularization coefficient
 	float coef = 7;
+	uint32 nIter = 8;
 }
 
 message RecommendRequest {

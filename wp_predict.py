@@ -108,7 +108,9 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             request.weight=0.5
         if request.coef==0.0:
             request.coef=2.0
-        results=wals(request.user,request.dayFrom,request.dayTo,request.predictMoment,request.dimension,request.weight,request.coef)
+        if request.nIter==0:
+            request.nIter=30
+        results=wals(request.user,request.dayFrom,request.dayTo,request.predictMoment,request.dimension,request.weight,request.coef,request.nIter)
 
         if results==-1:
             return wprecservice_pb2.RecommendResponse(error=0)
