@@ -26,6 +26,12 @@
     <Compile Include="make_pos_sparse.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="models\category1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="models\category2.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\dealw2v.py">
       <SubType>Code</SubType>
     </Compile>
