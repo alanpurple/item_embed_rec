@@ -23,6 +23,7 @@
     <Compile Include="din_model.py" />
     <Compile Include="gbc.py" />
     <Compile Include="input.py" />
+    <Compile Include="make_pos_cate.py" />
     <Compile Include="make_pos_sparse.py">
       <SubType>Code</SubType>
     </Compile>
