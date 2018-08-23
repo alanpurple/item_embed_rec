@@ -7,7 +7,7 @@ from models import PosData
 from models import WepickDeal
 from models import Category2
 
-HISTORY_FROM='03-21'
+HISTORY_FROM='03-11'
 HISTORY_TO='04-10'
 
 data_path='wp_'+HISTORY_FROM+'_'+HISTORY_TO+'_cate.json'
@@ -22,7 +22,8 @@ cate_finder=dict(zip(cate_dict,range(len(cate_dict))))
 cursor=PosData.objects(TransDate__gte='2018-'+HISTORY_FROM+' 00',TransDate__lte='2018-'+'04-11'+' 20',WepickRank__gte=20,WepickRank__lte=90)
 
 wepickdata=cursor.aggregate(
-    *[{'$group':{'_id':'$UserId','docs':{'$push':'$DealId'}}}],allowDiskUse=True)
+    *[{'$lookup':{'from':'dealw2v','localField':'DealId','foreignField':'_id','as':'deal'}},
+        {'$group':{'_id':'$UserId','docs':{'$push':'$deal.category2'}}}],allowDiskUse=True)
 # in case cursornotfounderrror caused by very long sampling times
 wepickdata=list(wepickdata)
 print('number of users: ',len(wepickdata))
@@ -34,12 +35,7 @@ user_dict=[]
 for elem in wepickdata:
     if len(elem['docs'])>30 and len(elem['docs'])<200:
         user_dict.append(elem['_id'])
-        hist=[]
-        for doc in elem['docs']:
-            deal=DealW2v.objects(pk=doc).first()
-            if deal !=None:
-                hist.append(cate_finder[deal.category2.id])
-        hist=list(set(hist))    
+        hist=[cate_finder[elem2[0]] for elem2 in elem['docs']]
         data.append(hist)
 
 
@@ -47,7 +43,7 @@ print('Number of Actual Users: ',len(data))
 
 np.save('cate_dict.npy',cate_dict)
 
-np.save('user_'+HISTORY_FROM+'_'+HISTORY_TO+'.npy',user_dict)
+np.save('user_'+HISTORY_FROM+'_'+HISTORY_TO+'_for_cate.npy',user_dict)
 
 with open(data_path,'w') as f:
     json.dump(data,f)
