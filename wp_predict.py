@@ -12,7 +12,7 @@ from models import WepickDeal
 
 from wp_rnn_37 import wp_rnn_classifier_fn
 
-from tf_wals_lib import wals
+from tf_wals_lib import wals,wals_cate
 
 import wprecservice_pb2
 import wprecservice_pb2_grpc
@@ -116,3 +116,18 @@ class WpRecService(wprecservice_pb2_grpc.WpRecServiceServicer):
             return wprecservice_pb2.RecommendResponse(error=0)
         else:
             return wprecservice_pb2.RecommendResponse(error=-1,result=results)
+
+    def GetMfCateRecommend(self, request, context):
+        if request.dayFrom=='' or request.dayTo=='':
+            return wprecservice_pb2.MfDataResponse(error=0)
+        if request.dimension==0:
+            request.dimension=30
+        if request.weight==0.0:
+            request.weight=0.5
+        if request.coef==0.0:
+            request.coef=2.0
+        if request.nIter==0:
+            request.nIter=30
+        dimension,row,col=wals_cate(request.dayFrom,request.dayTo,request.dimension,request.weight,request.coef,request.nIter)
+
+        return wprecservice_pb2.MfDataResponse(error=-1,numFeatures=dimension,users=row,items=col)

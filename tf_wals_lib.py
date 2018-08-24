@@ -10,6 +10,51 @@ from models import PosData
 from models import WepickDeal
 from models import DealW2v
 
+def wals_cate(from_date,to_date,dimension=10,weight=0.5,coef=2.0,n_iter=30):
+    data_path='wp_'+from_date+'_'+to_date+'_cate.json'
+    cate_dict=np.load('cate_dict.npy')
+    user_dict=np.load('user_'+from_date+'_'+to_date+'_for_cate.npy')
+
+    num_rows=len(user_dict)
+    num_cols=len(cate_dict)
+
+    with open(data_path,'r') as f:
+        data=json.load(f)
+
+    indices=[]
+    values=[]
+
+    for idx,elem in enumerate(data):
+        indices+=zip([idx]*len(elem),elem)
+        values+=[1.0]*len(elem)
+
+    with tf.Graph().as_default() as graph1:
+        sp_mat=tf.SparseTensor(indices,values,[num_rows,num_cols])
+
+        model=WALSModel(num_rows,num_cols,dimension,weight,coef,row_weights=None,col_weights=None)
+
+        row_factors=tf.reshape(model.row_factors[0],[-1])
+        col_factors=tf.reshape(amodel.col_factors[0],[-1])
+
+        sess=tf.Session(graph=graph1)
+
+        row_update_op=model.update_row_factors(sp_mat)[1]
+        col_update_op=model.update_col_factors(sp_mat)[1]
+        
+        sess.run(model.initialize_op)
+        for _ in range(n_iter):
+            sess.run(model.row_update_prep_gramian_op)
+            sess.run(model.initialize_row_update_op)
+            sess.run(row_update_op)
+            sess.run(model.col_update_prep_gramian_op)
+            sess.run(model.initialize_col_update_op)
+            sess.run(col_update_op)
+
+    output_row=row_factors.eval(sess)
+    output_col=col_factors.eval(sess)
+
+    return dimension, output_row,output_col
+
 
 def wals(id,from_date,to_date,predict_moment,dimension=30,weight=0.5,coef=2.0,n_iter=30):
 

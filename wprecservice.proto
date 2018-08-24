@@ -9,11 +9,13 @@ package WpRecService;
 service WpRecService {
 	rpc GetRecommend (RecommendRequest) returns (RecommendResponse) {}
 	rpc GetMfRecommend (MfRequest) returns (RecommendResponse) {}
+	rpc GetMfCateRecommend (MfRequest) returns (MfDataResponse) {}
 }
 
 message MfRequest {
 	string dayFrom = 1;
 	string dayTo = 2;
+	// predictMoment and user are only for one-time prediction
 	string predictMoment = 3;
 	uint32 user = 4;
 	uint32 dimension = 5;
@@ -42,4 +44,12 @@ message Predicted {
 	uint32 id = 1;
 	uint32 slot = 2;
 	float score = 3;
+}
+
+message MfDataResponse {
+// -1 for no error, 0 for bad request, 1 for process error
+	int32 error = 1;
+	uint32 numFeatures = 2;
+	repeated uint32 users = 3;
+	repeated uint32 items = 4;
 }
