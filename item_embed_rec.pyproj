@@ -20,6 +20,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="base_model.py" />
+    <Compile Include="dict_remake.py" />
     <Compile Include="din_model.py" />
     <Compile Include="gbc.py" />
     <Compile Include="input.py" />

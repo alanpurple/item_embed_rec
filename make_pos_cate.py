@@ -36,6 +36,7 @@ for elem in wepickdata:
     if len(elem['docs'])>30 and len(elem['docs'])<200:
         user_dict.append(elem['_id'])
         hist=[cate_finder[elem2[0]] for elem2 in elem['docs']]
+        hist=list(set(hist))
         data.append(hist)
 
 
