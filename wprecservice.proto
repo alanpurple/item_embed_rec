@@ -50,6 +50,6 @@ message MfDataResponse {
 // -1 for no error, 0 for bad request, 1 for process error
 	int32 error = 1;
 	uint32 numFeatures = 2;
-	repeated uint32 users = 3;
-	repeated uint32 items = 4;
+	string users = 3;
+	string items = 4;
 }

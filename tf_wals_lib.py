@@ -5,6 +5,7 @@ from scipy.sparse import coo_matrix
 from tensorflow.contrib.factorization import WALSMatrixFactorization as wmf
 from tensorflow.contrib.factorization import WALSModel
 import json
+import random
 
 from models import PosData
 from models import WepickDeal
@@ -33,8 +34,8 @@ def wals_cate(from_date,to_date,dimension=10,weight=0.5,coef=2.0,n_iter=30):
 
         model=WALSModel(num_rows,num_cols,dimension,weight,coef,row_weights=None,col_weights=None)
 
-        row_factors=tf.reshape(model.row_factors[0],[-1])
-        col_factors=tf.reshape(amodel.col_factors[0],[-1])
+        row_factors=model.row_factors[0]
+        col_factors=model.col_factors[0]
 
         sess=tf.Session(graph=graph1)
 
@@ -50,10 +51,26 @@ def wals_cate(from_date,to_date,dimension=10,weight=0.5,coef=2.0,n_iter=30):
             sess.run(model.initialize_col_update_op)
             sess.run(col_update_op)
 
-    output_row=row_factors.eval(sess)
-    output_col=col_factors.eval(sess)
+    output_row=row_factors.eval(sess).tolist()
+    output_col=col_factors.eval(sess).tolist()
 
-    return dimension, output_row,output_col
+    sess.close()
+
+    # temporary mechanism for generated matrice
+    random.seed()
+    temp_num=str(random.randrange(100))
+
+    user_temp_name='temp_user'+temp_num
+    item_temp_name='temp_item'+temp_num
+
+    with open('../'+user_temp_name+'.json','w') as f:
+        json.dump(output_row,f)
+    with open('../'+item_temp_name+'.json','w') as f:
+        json.dump(output_col,f)
+
+    print('files saved')
+
+    return dimension, user_temp_name,item_temp_name
 
 
 def wals(id,from_date,to_date,predict_moment,dimension=30,weight=0.5,coef=2.0,n_iter=30):
