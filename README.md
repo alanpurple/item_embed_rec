@@ -4,3 +4,6 @@ Recommendation using item embedding based on user history
 gbc - using GradientBoosting for classification  
 tf_wals - WALS(Weighted Alternating Least Sqaure by Tensorflow)  
 wp_predict - method hub for many models
+
+# DIN
+Deep Interest Network by Alibaba, rewritten in tensorflow
